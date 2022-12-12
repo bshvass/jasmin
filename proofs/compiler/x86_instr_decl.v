@@ -947,8 +947,8 @@ Definition substitute {ws} (v1 : word ws) :=
 
 Definition wAESKEYGENASSIST (v1 : u128) (v2 : u8) :=
   let rcon := zero_extend U32 v2 in
-  let x1 := word.subword 1 U32 v1 in
-  let x3 := word.subword 3 U32 v1 in
+  let x1 := word.subword (1 * U32) U32 v1 in
+  let x3 := word.subword (3 * U32) U32 v1 in
   let y0 := substitute x1 in
   let y1 := wxor (wror (substitute x1) 1) rcon in
   let y2 := substitute x3 in
