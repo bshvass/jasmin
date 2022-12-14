@@ -1054,7 +1054,7 @@ Definition InvSubWord (v1 : u32) :=
   make_vec U32 (map InvSbox (split_vec U8 v1)).
 
 Definition to_matrix (s : u128) :=
-  let s_ := fun i j => (word.subword i U8 (word.subword j U32 s)) in
+  let s_ := fun i j => (word.subword (i * U8) U8 (word.subword (j * U32) U32 s)) in
   (s_ 0 0, s_ 0 1, s_ 0 2, s_ 0 3,
     s_ 1 0, s_ 1 1, s_ 1 2, s_ 1 3,
     s_ 2 0, s_ 2 1, s_ 2 2, s_ 2 2,
@@ -1098,8 +1098,8 @@ Definition InvShiftRows (s : u128) :=
       s30, s31, s32, s33).
 
 (* TODO: Implement these *)
-Definition MixColumns : u128 -> u128 := fun _ => word.word0.
-Definition InvMixColumns : u128 -> u128 := fun _ => word.word0.
+Definition MixColumns : u128 -> u128 := fun w => w.
+Definition InvMixColumns : u128 -> u128 := fun w => w.
 
 Definition wAESDEC (state rkey : u128) :=
   let state := InvShiftRows state in
@@ -1133,18 +1133,18 @@ Definition wAESKEYGENASSIST (v1 : u128) (v2 : u8) :=
   let y3 := wxor (wror (SubWord x3) 1) rcon in
   make_vec U128 [:: y0; y1; y2; y3].
 
-Definition AESENC_ (state rkey: u128) :=
+Definition wAESENC_ (state rkey: u128) :=
   let state := SubBytes state in
   let state := ShiftRows state in
   let state := MixColumns state in
   word.wxor state rkey.
 
-Definition AESENCLAST_ (state rkey: u128) :=
+Definition wAESENCLAST_ (state rkey: u128) :=
   let state := SubBytes state in
   let state := ShiftRows state in
   word.wxor state rkey.
 
-Definition AESDEC_ (state rkey: u128) :=
+Definition wAESDEC_ (state rkey: u128) :=
   let state := InvShiftRows state in
   let state := InvSubBytes state in
   let state := word.wxor state rkey in
