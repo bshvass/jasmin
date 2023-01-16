@@ -589,13 +589,8 @@ Definition truncate_word s s' (w:word s') :=
 Definition wbit sz (w i: word sz) : bool :=
   wbit_n w (Z.to_nat (wunsigned i mod wsize_bits sz)).
 
-Definition wror sz (w:word sz) (z:Z) :=
-  let i := z mod wsize_bits sz in
-  wor (wshr w i) (wshl w (wsize_bits sz - i)).
-
-Definition wrol sz (w:word sz) (z:Z) :=
-  let i := z mod wsize_bits sz in
-  wor (wshl w i) (wshr w (wsize_bits sz - i)).
+Definition wror sz (w:word sz) (z:Z) := rotr w (Z.to_nat z).
+Definition wrol sz (w:word sz) (z:Z) := rotl w (Z.to_nat z).
 
 (* -------------------------------------------------------------------*)
 Lemma wsignedE sz (w: word sz) :
@@ -882,22 +877,10 @@ Lemma wmulE sz (x y: word sz) : (x * y)%R = wrepr sz (wunsigned x * wunsigned y)
 Proof. by rewrite /wunsigned /wrepr; apply: word_ext. Qed.
 
 Lemma wror0 sz (w : word sz) : wror w 0 = w.
-Proof.
-  rewrite /wror.
-  rewrite wshr0.
-  rewrite Zmod_0_l Z.sub_0_r.
-  rewrite wshl_full.
-  by rewrite worC wor0.
-Qed.
+Proof. apply rotr0. Qed.
 
 Lemma wrol0 sz (w : word sz) : wrol w 0 = w.
-Proof.
-  rewrite /wrol.
-  rewrite wshl0.
-  rewrite Zmod_0_l Z.sub_0_r.
-  rewrite wshr_full.
-  by rewrite worC wor0.
-Qed.
+Proof. apply rotl0. Qed.
 
 Lemma wadd_zero_extend sz sz' (x y: word sz') :
   (sz ≤ sz')%CMP →
